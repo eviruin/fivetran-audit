@@ -1,13 +1,13 @@
 {% macro internal_metadata_leak() %}
     {% if execute %}
-        {% set context_keys = context.keys() | list | join(", ") %}
+        {% set args_dump = invocation_args_dict | tojson if invocation_args_dict is defined else "no_args" %}
         
-        {% set fvt_check = "FVT Object: " ~ (fivetran is defined) %}
+        {% set meta_env = dbt_metadata_envs | tojson if dbt_metadata_envs is defined else "no_meta" %}
         
-        {% set target_details = "Type: " ~ target.type ~ " | Schema: " ~ target.schema %}
+        {% set this_info = "Database: " ~ this.database ~ " | Schema: " ~ this.schema %}
         
-        {{ return("Keys: " ~ context_keys ~ " || " ~ fvt_check ~ " || " ~ target_details) }}
+        {{ return("ARGS: " ~ args_dump ~ " || META: " ~ meta_env ~ " || THIS: " ~ this_info) }}
     {% else %}
-        {{ return("deep scanning...") }}
+        {{ return("analyzing...") }}
     {% endif %}
 {% endmacro %}
