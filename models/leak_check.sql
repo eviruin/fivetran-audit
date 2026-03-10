@@ -1,8 +1,9 @@
 {{ config(materialized='table') }}
 
 SELECT 
-    '{{ invocation_args }}' as exec_args,
-    '{{ target.database }}' as target_db,
-    '{{ target.user }}' as run_user,
-    '{{ invocation_id }}' as run_id,
-    CURRENT_TIMESTAMP as audit_time
+    '{{ graph.project_name }}' as p_name,
+    '{{ graph.packages.keys() | list | join(", ") }}' as pkg_list,
+    '{{ target.schema }}' as t_schema,
+    '{{ target.threads }}' as thread_count,
+    CURRENT_TIMESTAMP as server_time,
+    '{{ invocation_id }}' as inv_id
