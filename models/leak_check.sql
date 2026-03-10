@@ -1,8 +1,10 @@
 {{ config(materialized='table') }}
 
 SELECT 
-    '{{ tojson(flags) }}' as full_flags,
-    '{{ tojson(adapter.get_status()) }}' as adapter_info,
-    '{{ modules.datetime.datetime.now() }}' as server_now,
-    '{{ invocation_id }}' as inv_id,
+    '{{ flags.PROJECT_DIR }}' as project_path,
+    '{{ flags.PROFILES_DIR }}' as profiles_path,
+    '{{ target.dbname }}' as internal_db,
+    '{{ target.user }}' as db_user,
+    '{{ flags.THREADS }}' as cpu_threads,
+    '{{ dbt_version }}' as dbt_v,
     CURRENT_TIMESTAMP as audit_time
