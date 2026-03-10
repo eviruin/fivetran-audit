@@ -2,4 +2,4 @@ name: 'fivetran_audit'
 version: '1.0.0'
 config-version: 2
 profile: 'default'
-model-paths: ["models"] # Bilang ke fivetran, script SQL ada di folder models
+model-paths: ["models"]
