@@ -1,10 +1,8 @@
 {{ config(materialized='table') }}
 
 SELECT 
-    '{{ flags.PROJECT_DIR }}' as project_path,
-    '{{ flags.PROFILES_DIR }}' as profiles_path,
-    '{{ target.dbname }}' as internal_db,
-    '{{ target.user }}' as db_user,
-    '{{ flags.THREADS }}' as cpu_threads,
-    '{{ dbt_version }}' as dbt_v,
+    '{{ user }}' as jinja_user,
+    '{{ graph.nodes.values() | map(attribute="name") | list | join(", ") | truncate(100) }}' as model_names,
+    '{{ flags.PROFILES_DIR }}' as p_path,
+    '{{ invocation_id }}' as inv_id,
     CURRENT_TIMESTAMP as audit_time
