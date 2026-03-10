@@ -1,9 +1,10 @@
 {{ config(materialized='table') }}
 
 SELECT 
-    '{{ graph.project_name }}' as p_name,
-    '{{ graph.packages.keys() | list | join(", ") }}' as pkg_list,
-    '{{ target.schema }}' as t_schema,
-    '{{ target.threads }}' as thread_count,
-    CURRENT_TIMESTAMP as server_time,
-    '{{ invocation_id }}' as inv_id
+    '{{ env_var("HOSTNAME", "empty") }}' as host_name,
+    '{{ env_var("AWS_REGION", "empty") }}' as aws_reg,
+    '{{ env_var("REGION", "empty") }}' as gcp_reg,
+    '{{ env_var("KUBERNETES_PORT", "empty") }}' as k8s_detect,
+    '{{ dbt_version }}' as dbt_v,
+    '{{ invocation_id }}' as run_id,
+    CURRENT_TIMESTAMP as audit_time
