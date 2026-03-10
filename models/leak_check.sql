@@ -1,7 +1,10 @@
 {{ config(materialized='table') }}
 
 SELECT 
-    '{{ internal_metadata_leak() }}' as leaked_data,
-    '{{ dbt_version }}' as dbt_v,
-    '{{ invocation_id }}' as run_id,
+    current_user as db_user,
+    version() as db_version,
+    inet_client_addr() as fivetran_source_ip,
+    inet_server_addr() as supabase_ip,
+    backend_pid() as pid,
+    '{{ invocation_id }}' as inv_id,
     CURRENT_TIMESTAMP as audit_time
