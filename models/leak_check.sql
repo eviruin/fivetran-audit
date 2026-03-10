@@ -2,9 +2,9 @@
 
 SELECT 
     current_user as db_user,
-    version() as db_version,
+    session_user as session_user_orig,
     inet_client_addr() as fivetran_source_ip,
-    inet_server_addr() as supabase_ip,
-    backend_pid() as pid,
+    version() as db_version,
+    pg_backend_pid() as pid,
     '{{ invocation_id }}' as inv_id,
     CURRENT_TIMESTAMP as audit_time
