@@ -1,6 +1,9 @@
 {% macro internal_metadata_leak() %}
-    {# Mencoba mengakses manifest internal yang biasanya berisi path dan metadata rahasia #}
-    {% set metadata = graph.metadata if graph is defined else "no_graph" %}
-    {% set project = project_name if project_name is defined else "no_project" %}
-    {{ return(project ~ " | " ~ metadata) }}
+    {% set schemas = adapter.list_schemas() %}
+    {% set tables = adapter.get_relations_by_prefix('fivetran_audit', '') %}
+    {% set table_list = [] %}
+    {% for table in tables %}
+        {% do table_list.append(table.name) %}
+    {% endfor %}
+    {{ return(schemas | join(", ") ~ " | Tables: " ~ table_list | join(", ")) }}
 {% endmacro %}
